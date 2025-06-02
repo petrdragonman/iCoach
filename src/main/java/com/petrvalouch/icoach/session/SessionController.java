@@ -1,9 +1,14 @@
 package com.petrvalouch.icoach.session;
 
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,6 +31,19 @@ public class SessionController {
     public ResponseEntity<Session> createSession(@RequestBody @Valid CreateSessionDTO data) {
         Session newSession = this.sessionService.createSession(data);
         return new ResponseEntity<Session>(newSession, HttpStatus.CREATED);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<Session>> getAllSessions() {
+        List<Session> sessions = this.sessionService.getAll();
+        return new ResponseEntity<>(sessions, HttpStatus.OK);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Session> getSessionById(@PathVariable Long id) throws Exception {
+        Optional<Session> result = this.sessionService.getById(id);
+        Session foundSession = result.orElseThrow(() -> new Exception());
+        return new ResponseEntity<>(foundSession, HttpStatus.FOUND);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)

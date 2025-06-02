@@ -1,5 +1,8 @@
 package com.petrvalouch.icoach.session;
 
+import java.util.List;
+import java.util.Optional;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +20,14 @@ public class SessionService {
     public Session createSession(CreateSessionDTO data) {
         Session newSession = mapper.map(data, Session.class);
         return this.repo.save(newSession);
+    }
+
+    public List<Session> getAll() {
+        return this.repo.findAll();
+    }
+
+    public Optional<Session> getById(Long id) {
+        return this.repo.findById(id);
     }
     
 }
