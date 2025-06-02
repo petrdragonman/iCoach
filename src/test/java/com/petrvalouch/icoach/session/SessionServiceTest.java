@@ -14,6 +14,7 @@ import jakarta.validation.ValidatorFactory;
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -66,17 +67,6 @@ class SessionServiceTest {
         verify(modelMapper, times(1)).map(inputDto, Session.class);
         verify(sessionRepository, times(1)).save(mappedSession);
     }
-
-    // @Test
-    // void createSession_NullInput_ThrowsException() {
-    //     // Act & Assert
-    //     assertThrows(IllegalArgumentException.class, () -> {
-    //         sessionService.createSession(null);
-    //     });
-        
-    //     verifyNoInteractions(modelMapper);
-    //     verifyNoInteractions(sessionRepository);
-    // }
 
     @Test
     void createSession_BlankSessionName_ValidationFails() {
@@ -162,96 +152,19 @@ class SessionServiceTest {
         assertEquals(inputDto.getDate(), result.getDate());
     }
 
+    @Test
+    void getAllSessions_ReturnsAllSessions() {
+        
+    }
+
+
+
+
     private CreateSessionDTO createValidDto() {
         CreateSessionDTO dto = new CreateSessionDTO();
         dto.setSessionName("Test Session");
         dto.setDate(LocalDate.of(2023, 1, 1));
         return dto;
     }
+
 }
-
-/**
- * package com.petrvalouch.icoach.session;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.time.LocalDate;
-
-import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.modelmapper.ModelMapper;
-import org.springframework.web.server.ResponseStatusException;
-
-public class SessionServiceTest {
-    
-    @Mock
-    private SessionRepository repo;
-    private ModelMapper mapper;
-    private SessionService sessionService;
-    private AutoCloseable autoCloseable;
-
-    @BeforeEach
-    void setUp() {
-        autoCloseable = MockitoAnnotations.openMocks(this);
-        mapper = new ModelMapper();
-        sessionService = new SessionService(repo, mapper);
-    }
-
-    @AfterEach
-    void tearDown() throws Exception {
-        autoCloseable.close();
-    }
-
-    @Test
-    void createSession_ValidInput_ReturnsSessionWithMatchingArguments() {
-        // Arrange
-        Session newSession = new Session();
-        newSession.setSessionName("Saturday training");
-        newSession.setDate(LocalDate.of(2025, 5, 31));
-        CreateSessionDTO dto = mapper.map(newSession, CreateSessionDTO.class);
-
-        when(repo.save(any(Session.class))).thenReturn(newSession);
-
-        // Act
-        Session createdSession = sessionService.createSession(dto);
-
-        // Assert
-        Assertions.assertThat(createdSession.getSessionName())
-            .isEqualTo(newSession.getSessionName());
-        Assertions.assertThat(newSession.getDate())
-            .isEqualTo(newSession.getDate());
-        
-        verify(repo, times(1)).save(any(Session.class));
-    }
-
-    @Test
-    void createSession_InvalidInput_ThrowsBadRequest() {
-        // Arrange
-        Session invalidSession = new Session();
-        invalidSession.setSessionName(null);
-        invalidSession.setDate(LocalDate.of(2025, 5, 31));
-        CreateSessionDTO invalidDto = mapper.map(invalidSession, CreateSessionDTO.class);
-
-        when(repo.save(any(Session.class))).thenReturn(invalidSession);
-
-        // Act
-        Session createdSession = sessionService.createSession(invalidDto);
-
-        // Assert
-        Assertions.assertThat(() -> sessionService.createdSession(invalidDto)).equals(null);
-        // Assertions.assertThatThrownBy(() -> sessionService.createSession(invalidDto))
-        //     .isInstanceOf(ResponseStatusException.class)
-        //     .hasMessageContaining("400 BAD_REQUEST");
-        
-        verify(repo, times(0)).save(any(Session.class));
-    }
-}
- */
