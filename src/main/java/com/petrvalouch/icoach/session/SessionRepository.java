@@ -1,4 +1,4 @@
-package com.petrvalouch.icoach.sessions;
+package com.petrvalouch.icoach.session;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
