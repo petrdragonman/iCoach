@@ -1,4 +1,4 @@
-package com.petrvalouch.icoach.sessions;
+package com.petrvalouch.icoach.session;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
