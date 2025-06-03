@@ -1,7 +1,11 @@
 package com.petrvalouch.icoach.session;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -12,13 +16,22 @@ import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Consumer;
+import java.util.stream.Stream;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class SessionServiceTest {
+
+    private static final LocalDate TEST_DATE = LocalDate.of(2025, 1, 1);
+    private static final String TEST_SESSION_NAME = "Test Session";
+    private static final Long TEST_SESSION_ID = 1L;
 
     @Mock
     private SessionRepository sessionRepository;
@@ -30,26 +43,27 @@ class SessionServiceTest {
     private SessionService sessionService;
 
     private final Validator validator;
+    private List<Session> testSessions;
 
     public SessionServiceTest() {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
     }
 
+    @BeforeEach
+    void setUp() {
+        testSessions = List.of(
+            createTestSession(1L, "Saturday Session", LocalDate.of(2005, 6, 1)),
+            createTestSession(2L, "Tuesday Session", LocalDate.of(2005, 6, 3))
+        );
+    }
+
     @Test
     void createSession_ValidData_ReturnsSavedSession() {
         // Arrange
-        LocalDate testDate = LocalDate.of(2023, 1, 1);
         CreateSessionDTO inputDto = createValidDto();
-        
-        Session mappedSession = new Session();
-        mappedSession.setSessionName("Test Session");
-        mappedSession.setDate(testDate);
-        
-        Session savedSession = new Session();
-        savedSession.setId(1L);
-        savedSession.setSessionName("Test Session");
-        savedSession.setDate(testDate);
+        Session mappedSession = createTestSession(null, TEST_SESSION_NAME, TEST_DATE);
+        Session savedSession = createTestSession(TEST_SESSION_ID, TEST_SESSION_NAME, TEST_DATE);
         
         when(modelMapper.map(inputDto, Session.class)).thenReturn(mappedSession);
         when(sessionRepository.save(mappedSession)).thenReturn(savedSession);
@@ -58,113 +72,136 @@ class SessionServiceTest {
         Session result = sessionService.createSession(inputDto);
 
         // Assert
-        assertNotNull(result);
-        assertEquals(1L, result.getId());
-        assertEquals("Test Session", result.getSessionName());
-        assertEquals(testDate, result.getDate());
+        assertThat(result)
+            .isNotNull()
+            .extracting(Session::getId, Session::getSessionName, Session::getDate)
+            .containsExactly(TEST_SESSION_ID, TEST_SESSION_NAME, TEST_DATE);
+            
         assertTrue(validator.validate(inputDto).isEmpty());
         
-        verify(modelMapper, times(1)).map(inputDto, Session.class);
-        verify(sessionRepository, times(1)).save(mappedSession);
+        verify(modelMapper).map(inputDto, Session.class);
+        verify(sessionRepository).save(mappedSession);
     }
 
-    @Test
-    void createSession_BlankSessionName_ValidationFails() {
-        // Arrange
-        CreateSessionDTO invalidDto = createValidDto();
-        invalidDto.setSessionName(" ");
+    @ParameterizedTest
+    @MethodSource("provideInvalidSessionData")
+    void createSession_InvalidData_ValidationFails(
+            String testName,
+            Consumer<CreateSessionDTO> modifier,
+            String expectedMessage) {
         
-        // Act & Assert
-        var violations = validator.validate(invalidDto);
-        assertFalse(violations.isEmpty());
-        assertEquals(1, violations.size());
-        assertEquals("session name is required", violations.iterator().next().getMessage());
-    }
+        CreateSessionDTO invalidDto = createValidDto();
+        modifier.accept(invalidDto);
 
-    @Test
-    void createSession_NullDate_ValidationFails() {
-        // Arrange
-        CreateSessionDTO invalidDto = createValidDto();
-        invalidDto.setDate(null);
-        
-        // Act & Assert
         var violations = validator.validate(invalidDto);
+        
         assertFalse(violations.isEmpty());
         assertEquals(1, violations.size());
-        assertEquals("date is required", violations.iterator().next().getMessage());
+        assertEquals(expectedMessage, violations.iterator().next().getMessage());
     }
 
     @Test
     void createSession_DatabaseError_ThrowsException() {
-        // Arrange
         CreateSessionDTO inputDto = createValidDto();
-        Session mappedSession = new Session();
-        mappedSession.setSessionName("Test Session");
-        mappedSession.setDate(LocalDate.now());
+        Session mappedSession = createTestSession(null, TEST_SESSION_NAME, LocalDate.now());
         
         when(modelMapper.map(inputDto, Session.class)).thenReturn(mappedSession);
         when(sessionRepository.save(mappedSession))
             .thenThrow(new DataIntegrityViolationException("Database error"));
 
-        // Act & Assert
-        assertThrows(DataIntegrityViolationException.class, () -> {
-            sessionService.createSession(inputDto);
-        });
+        assertThrows(DataIntegrityViolationException.class, () -> 
+            sessionService.createSession(inputDto)
+        );
     }
 
     @Test
     void createSession_VerifyModelMapperMapping() {
-        // Arrange
         CreateSessionDTO inputDto = createValidDto();
-        Session expectedSession = new Session();
-        expectedSession.setSessionName(inputDto.getSessionName());
-        expectedSession.setDate(inputDto.getDate());
+        Session expectedSession = createTestSession(null, inputDto.getSessionName(), inputDto.getDate());
         
         when(modelMapper.map(inputDto, Session.class)).thenReturn(expectedSession);
         when(sessionRepository.save(expectedSession)).thenReturn(expectedSession);
 
-        // Act
         sessionService.createSession(inputDto);
 
-        // Assert
         verify(modelMapper).map(inputDto, Session.class);
         verify(sessionRepository).save(expectedSession);
     }
 
     @Test
     void createSession_VerifyReturnedSessionProperties() {
-        // Arrange
         CreateSessionDTO inputDto = createValidDto();
-        Session savedSession = new Session();
-        savedSession.setId(5L);
-        savedSession.setSessionName(inputDto.getSessionName());
-        savedSession.setDate(inputDto.getDate());
+        Long expectedId = 5L;
+        Session mappedSession = new Session();
+        Session savedSession = createTestSession(expectedId, inputDto.getSessionName(), inputDto.getDate());
         
-        when(modelMapper.map(inputDto, Session.class)).thenReturn(new Session());
+        when(modelMapper.map(inputDto, Session.class)).thenReturn(mappedSession);
         when(sessionRepository.save(any(Session.class))).thenReturn(savedSession);
 
-        // Act
         Session result = sessionService.createSession(inputDto);
 
-        // Assert
-        assertEquals(5L, result.getId());
-        assertEquals(inputDto.getSessionName(), result.getSessionName());
-        assertEquals(inputDto.getDate(), result.getDate());
+        assertThat(result)
+            .extracting(Session::getId, Session::getSessionName, Session::getDate)
+            .containsExactly(expectedId, inputDto.getSessionName(), inputDto.getDate());
+        verify(sessionRepository, times(1)).save(mappedSession);
     }
 
     @Test
     void getAllSessions_ReturnsAllSessions() {
+        when(sessionRepository.findAll()).thenReturn(testSessions);
         
+        List<Session> result = sessionService.getAll();
+        
+        assertThat(result)
+            .hasSize(2)
+            .extracting(Session::getSessionName)
+            .containsExactly("Saturday Session", "Tuesday Session");
+        verify(sessionRepository, times(1)).findAll();
     }
 
+    @Test
+    void getSessionById_ReturnSession() {
+        // Arrange
+        Long id = 1L;
+        Session expectedSession = testSessions.get(0);
+        when(sessionRepository.findById(id)).thenReturn(Optional.of(expectedSession));
 
+        // Act
+        Optional<Session> result = sessionService.getById(id);
 
+        // Assert
+        assertTrue(result.isPresent());
+        assertEquals(expectedSession, result.get());
+        verify(sessionRepository, times(1)).findById(id);
+    }
+
+    private static Stream<Arguments> provideInvalidSessionData() {
+        return Stream.of(
+            Arguments.of(
+                "Blank session name",
+                (Consumer<CreateSessionDTO>) dto -> dto.setSessionName(" "),
+                "session name is required"
+            ),
+            Arguments.of(
+                "Null date",
+                (Consumer<CreateSessionDTO>) dto -> dto.setDate(null),
+                "date is required"
+            )
+        );
+    }
 
     private CreateSessionDTO createValidDto() {
         CreateSessionDTO dto = new CreateSessionDTO();
-        dto.setSessionName("Test Session");
-        dto.setDate(LocalDate.of(2023, 1, 1));
+        dto.setSessionName(TEST_SESSION_NAME);
+        dto.setDate(TEST_DATE);
         return dto;
     }
 
+    private Session createTestSession(Long id, String name, LocalDate date) {
+        Session session = new Session();
+        session.setId(id);
+        session.setSessionName(name);
+        session.setDate(date);
+        return session;
+    }
 }

@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ServerErrorException;
 
+import com.petrvalouch.icoach.common.exceptions.SessionNotFoundException;
+
 import jakarta.validation.Valid;
 
 @RestController
@@ -42,7 +44,7 @@ public class SessionController {
     @GetMapping("/{id}")
     public ResponseEntity<Session> getSessionById(@PathVariable Long id) throws Exception {
         Optional<Session> result = this.sessionService.getById(id);
-        Session foundSession = result.orElseThrow(() -> new Exception());
+        Session foundSession = result.orElseThrow(() -> new SessionNotFoundException(id));
         return new ResponseEntity<>(foundSession, HttpStatus.FOUND);
     }
 

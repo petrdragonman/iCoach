@@ -78,5 +78,15 @@ public class SessionControllerTest {
             .andExpect(MockMvcResultMatchers.status().isBadRequest()); // 400 Bad Request
     }
 
+    @Test
+    public void SessionController_getAllSessions_returnsAllSessions() {
+        Session session1 = new Session();
+        session1.setSessionName("Thursday training");
+        session1.setDate(LocalDate.of(2025, 5, 28));
+        Session session2 = new Session();
+        session2.setSessionName("Monday training");
+        session2.setDate(LocalDate.of(2025, 6, 2));
+    }
+
     
 }
