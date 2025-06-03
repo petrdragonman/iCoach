@@ -1,4 +1,4 @@
-package com.petrvalouch.icoach.sessions;
+package com.petrvalouch.icoach.session;
 
 import java.time.LocalDate;
 
@@ -8,6 +8,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+
 
 @Entity
 @Table
@@ -21,6 +22,9 @@ public class Session {
 
     @Column(nullable = false)
     private LocalDate date;
+
+    public Session() {
+    }
 
     public Long getId() {
         return id;
