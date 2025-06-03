@@ -9,6 +9,7 @@ import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -56,6 +57,13 @@ public class SessionController {
             throw new SessionNotFoundException(id);
         }
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<Session> updateById(@PathVariable Long id, @Valid @RequestBody UpdateSessionDTO data) {
+        Optional<Session> result = this.sessionService.updateById(id, data);
+        Session foundSession =result.orElseThrow(() -> new SessionNotFoundException(id));
+        return new ResponseEntity<Session>(foundSession, HttpStatus.OK);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
