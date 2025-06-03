@@ -31,12 +31,23 @@ public class SessionService {
     }
 
     public boolean deleteById(Long id) {
-        Optional<Session> result = getById(id);
+        Optional<Session> result = this.getById(id);
         if (result.isEmpty()) {
             return false;
         }
         this.repo.delete(result.get());
         return true;
+    }
+
+    public Optional<Session> updateById(Long id, UpdateSessionDTO data) {
+        Optional<Session> result = this.getById(id);
+        if(result.isEmpty()) {
+            return result;
+        }
+        Session foundSession = result.get();
+        mapper.map(data, foundSession);
+        this.repo.save(foundSession);
+        return Optional.of(foundSession);
     }
     
 }
