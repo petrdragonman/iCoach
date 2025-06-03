@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.ErrorResponse;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -42,10 +43,19 @@ public class SessionController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Session> getSessionById(@PathVariable Long id) throws Exception {
+    public ResponseEntity<Session> getSessionById(@PathVariable Long id) throws SessionNotFoundException {
         Optional<Session> result = this.sessionService.getById(id);
         Session foundSession = result.orElseThrow(() -> new SessionNotFoundException(id));
         return new ResponseEntity<>(foundSession, HttpStatus.FOUND);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteById(@PathVariable Long id) throws SessionNotFoundException {
+        boolean wasDeleted = this.sessionService.deleteById(id);
+        if (!wasDeleted) {
+            throw new SessionNotFoundException(id);
+        }
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)

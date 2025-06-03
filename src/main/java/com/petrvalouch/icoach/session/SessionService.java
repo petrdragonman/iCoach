@@ -29,5 +29,14 @@ public class SessionService {
     public Optional<Session> getById(Long id) {
         return this.repo.findById(id);
     }
+
+    public boolean deleteById(Long id) {
+        Optional<Session> result = getById(id);
+        if (result.isEmpty()) {
+            return false;
+        }
+        this.repo.delete(result.get());
+        return true;
+    }
     
 }
