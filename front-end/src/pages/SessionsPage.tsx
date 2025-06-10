@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import SessionCard from "../components/sessionCard/SessionCard";
 import { getAllSessions } from "../services/SessionsService";
+import SessionList from "../components/SessionList";
 
 const SessionsPage = () => {
   const { data, isPending, error } = useQuery({
@@ -14,9 +14,9 @@ const SessionsPage = () => {
 
   return (
     <div>
-      <header className="text-red-400 text-5xl">iCoach</header>
-      <p>{isPending ? <h3>LOADING</h3> : JSON.stringify(data)}</p>
-      <SessionCard></SessionCard>
+      <header className="text-red-400 text-3xl">SESSIONS</header>
+      {/* <div>{isPending ? <p>LOADING</p> : JSON.stringify(data)}</div> */}
+      {!isPending && <SessionList sessions={data} />}
     </div>
   );
 };
