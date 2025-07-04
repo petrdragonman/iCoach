@@ -2,6 +2,8 @@ import { BrowserRouter, Route, Routes } from "react-router";
 import "./App.css";
 import SessionsPage from "./pages/SessionsPage";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import SessionPage from "./pages/SessionPage";
 
 const queryClient = new QueryClient();
 
@@ -11,8 +13,10 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<SessionsPage />} />
+          <Route path="/session" element={<SessionPage />} />
         </Routes>
       </BrowserRouter>
+      <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   );
 }
