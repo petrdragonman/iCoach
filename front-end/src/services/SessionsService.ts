@@ -1,10 +1,41 @@
+import axios from "axios";
+
+const BASE_URL = "http://localhost:8080";
+const axiosInstance = axios.create({ baseURL: BASE_URL });
+
 export interface Session {
-  id: number;
-  sessionName: string;
+  id?: number;
+  sessionType: SessionType;
+  craft: Craft;
+  location: string;
   date: string;
 }
 
+type SessionType = "TRAINING" | "RACING" | "LAND" | "OTHER";
+type Craft = "DB20" | "DB10" | "OC1" | "OC6";
+
 export const getAllSessions = async () => {
-  const response = await fetch("http://localhost:8080/sessions");
-  return await response.json();
+  const response = await axiosInstance.get<Session[]>("sessions");
+  return response.data;
+};
+
+export const getSessionById = async (id: number) => {
+  const response = await axiosInstance.get<Session>(`sessions/${id}`);
+  return response.data;
+};
+
+export const createSession = async (data: Session) => {
+  const response = await axiosInstance.post("sessions", data);
+  return response.data;
+};
+
+export const updateSession = async (data: Session) => {
+  console.log(data);
+  const response = await axiosInstance.patch(`sessions/${data.id}`, data);
+  return response.data;
+};
+
+export const deleteSession = async (data: Session) => {
+  const response = await axiosInstance.delete<Session>(`sessions/${data.id}`);
+  return response.data;
 };
