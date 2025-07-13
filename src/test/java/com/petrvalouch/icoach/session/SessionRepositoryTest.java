@@ -8,6 +8,8 @@ import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
+import com.petrvalouch.icoach.session.Session.SessionType;
+
 import java.time.LocalDate;
 import java.util.List;
 
@@ -27,11 +29,11 @@ class SessionRepositoryTest {
     @BeforeEach
     void setUp() {
         session1 = new Session();
-        session1.setSessionName("Thursday training");
+        session1.setSessionType(SessionType.TRAINING);
         session1.setDate(LocalDate.of(2025, 5, 28));
         
         session2 = new Session();
-        session2.setSessionName("Saturday training");
+        session2.setSessionType(SessionType.RACING);
         session2.setDate(LocalDate.of(2025, 5, 31));
         
         sessionRepository.saveAll(List.of(session1, session2));
@@ -46,7 +48,7 @@ class SessionRepositoryTest {
     void save_shouldPersistSession() {
         // Arrange
         Session newSession = new Session();
-        newSession.setSessionName("New session");
+        newSession.setSessionType(SessionType.TRAINING);
         newSession.setDate(LocalDate.now());
 
         // Act
@@ -54,7 +56,7 @@ class SessionRepositoryTest {
 
         // Assert
         assertNotNull(savedSession.getId());
-        assertEquals("New session", savedSession.getSessionName());
+        assertEquals("New session", savedSession.getSessionType());
         assertThat(sessionRepository.count()).isEqualTo(3);
     }
 
@@ -66,8 +68,8 @@ class SessionRepositoryTest {
         // Assert
         assertThat(sessions)
             .hasSize(2)
-            .extracting(Session::getSessionName)
-            .containsExactlyInAnyOrder("Thursday training", "Saturday training");
+            .extracting(Session::getSessionType)
+            .containsExactlyInAnyOrder(SessionType.TRAINING, SessionType.RACING);
     }
 
     @Test

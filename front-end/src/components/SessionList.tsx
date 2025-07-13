@@ -9,7 +9,7 @@ const SessionList = ({ sessions }: SessionListProps) => {
   if (sessions.length === 0) {
     return null;
   }
-  console.log(sessions);
+
   return (
     <>
       {sessions.map((session) => (

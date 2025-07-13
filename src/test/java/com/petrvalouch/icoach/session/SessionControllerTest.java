@@ -13,6 +13,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.petrvalouch.icoach.session.Session.SessionType;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -26,7 +27,7 @@ public class SessionControllerTest {
     @Test
     public void SessionController_createSession_validSession() throws JsonProcessingException, Exception {
         Session session1 = new Session();
-        session1.setSessionName("Thursday training");
+        session1.setSessionType(SessionType.TRAINING);
         session1.setDate(LocalDate.of(2025, 5, 28));
 
         mockMvc.perform(MockMvcRequestBuilders
@@ -56,7 +57,7 @@ public class SessionControllerTest {
     @Test
     public void SessionController_createSession_invalidSession_noDate() throws JsonProcessingException, Exception {
         Session session1 = new Session();
-        session1.setSessionName("Thursday training");
+        session1.setSessionType(SessionType.TRAINING);
 
         mockMvc.perform(MockMvcRequestBuilders
             .post("/sessions")
@@ -81,10 +82,10 @@ public class SessionControllerTest {
     @Test
     public void SessionController_getAllSessions_returnsAllSessions() {
         Session session1 = new Session();
-        session1.setSessionName("Thursday training");
+        session1.setSessionType(SessionType.TRAINING);
         session1.setDate(LocalDate.of(2025, 5, 28));
         Session session2 = new Session();
-        session2.setSessionName("Monday training");
+        session2.setSessionType(SessionType.RACING);
         session2.setDate(LocalDate.of(2025, 6, 2));
     }
 
