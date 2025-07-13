@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import com.petrvalouch.icoach.common.exceptions.AthleteNotFoundException;
 import com.petrvalouch.icoach.common.exceptions.SessionNotFoundException;
 
 @ControllerAdvice
@@ -16,6 +17,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(SessionNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     ResponseEntity<String> handleSessionNotFoundException(SessionNotFoundException ex) {
+        return new ResponseEntity<String>(ex.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(AthleteNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    ResponseEntity<String> handleAthleteNotFoundException(AthleteNotFoundException ex) {
         return new ResponseEntity<String>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 }
