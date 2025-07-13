@@ -1,6 +1,8 @@
 import axios from "axios";
+import type { Athlete } from "./AthleteService";
+import { BASE_URL } from "./serviceUtils";
 
-const BASE_URL = "http://localhost:8080";
+//const BASE_URL = "http://localhost:8080";
 const axiosInstance = axios.create({ baseURL: BASE_URL });
 
 export interface Session {
@@ -9,13 +11,15 @@ export interface Session {
   craft: Craft;
   location: string;
   date: string;
+  presentAthletes?: Array<Athlete>;
 }
 
 type SessionType = "TRAINING" | "RACING" | "LAND" | "OTHER";
-type Craft = "DB20" | "DB10" | "OC1" | "OC6";
+type Craft = "DB20" | "DB10" | "OC1" | "OC6" | "OTHER";
 
 export const getAllSessions = async () => {
   const response = await axiosInstance.get<Session[]>("sessions");
+  //console.log(response);
   return response.data;
 };
 

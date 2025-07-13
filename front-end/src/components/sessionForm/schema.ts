@@ -1,7 +1,7 @@
 import * as z from "zod";
 
 export const sessionType = ["TRAINING", "RACING", "LAND", "OTHER"] as const;
-export const craft = ["DB20", "DB10", "SIGLE", "OC6", "OTHER"] as const;
+export const craft = ["DB20", "DB10", "OC1", "OC6", "OTHER"] as const;
 
 export const schema = z.object({
   sessionType: z.enum(sessionType, { message: "Invalid session type input" }),
