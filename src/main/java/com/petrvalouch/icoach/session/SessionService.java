@@ -6,28 +6,33 @@ import java.util.Optional;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import com.petrvalouch.icoach.athlete.Athlete;
+import com.petrvalouch.icoach.athlete.AthleteRepository;
+
 @Service
 public class SessionService {
     
-    private SessionRepository repo;
+    private SessionRepository sessionRepo;
+    private AthleteRepository athleteRepo;
     private ModelMapper mapper;
 
-    public SessionService(SessionRepository repo, ModelMapper mapper) {
-        this.repo = repo;
+    public SessionService(SessionRepository sessionRepo, AthleteRepository athleteRepo, ModelMapper mapper) {
+        this.sessionRepo = sessionRepo;
+        this.athleteRepo = athleteRepo;
         this.mapper = mapper;
     }
 
     public Session createSession(CreateSessionDTO data) {
         Session newSession = mapper.map(data, Session.class);
-        return this.repo.save(newSession);
+        return this.sessionRepo.save(newSession);
     }
 
     public List<Session> getAll() {
-        return this.repo.findAll();
+        return this.sessionRepo.findAll();
     }
 
     public Optional<Session> getById(Long id) {
-        return this.repo.findById(id);
+        return this.sessionRepo.findById(id);
     }
 
     public boolean deleteById(Long id) {
@@ -35,7 +40,7 @@ public class SessionService {
         if (result.isEmpty()) {
             return false;
         }
-        this.repo.delete(result.get());
+        this.sessionRepo.delete(result.get());
         return true;
     }
 
@@ -46,8 +51,23 @@ public class SessionService {
         }
         Session foundSession = result.get();
         mapper.map(data, foundSession);
-        this.repo.save(foundSession);
+        this.sessionRepo.save(foundSession);
         return Optional.of(foundSession);
+    }
+
+    public Athlete addAthleteToSession(Long athleteId, Long sessionId) {
+        Optional<Athlete> athlete = this.athleteRepo.findById(athleteId);
+        Optional<Session> session = this.sessionRepo.findById(sessionId);
+        if (session.isPresent() && athlete.isPresent()) {
+            athlete.get().getAttendedSessions().add(session.get());
+            athleteRepo.save(athlete.get());
+            //session.get().getPresentAthletes().add(athlete.get());
+            //sessionRepo.save(session.get());
+            ////////////////////
+            return athlete.get();
+        } else {
+            throw new IllegalArgumentException("Athlete or Session not found");
+        }
     }
     
 }

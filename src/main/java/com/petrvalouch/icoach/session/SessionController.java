@@ -14,9 +14,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ServerErrorException;
 
+import com.petrvalouch.icoach.athlete.Athlete;
 import com.petrvalouch.icoach.common.exceptions.SessionNotFoundException;
 
 import jakarta.validation.Valid;
@@ -65,6 +67,13 @@ public class SessionController {
         Session foundSession =result.orElseThrow(() -> new SessionNotFoundException(id));
         return new ResponseEntity<Session>(foundSession, HttpStatus.OK);
     }
+
+    @PostMapping("/add-athlete-to-session")
+    public ResponseEntity<Athlete> addAthleteToSessio(@RequestParam Long athleteId, @RequestParam Long sessionId) {
+        Athlete addedAthlete = this.sessionService.addAthleteToSession(athleteId, sessionId);
+        return new ResponseEntity<Athlete>(addedAthlete, HttpStatus.OK); 
+    }
+    
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ErrorResponse> handleException(IllegalArgumentException ex) {

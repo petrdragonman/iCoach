@@ -11,6 +11,8 @@ const SessionCard = ({ session }: SessionCardProps) => {
   const deleteSessionMutation = useDeleteSession();
   const navigate = useNavigate();
 
+  console.log(session);
+
   const handleDelete = () => {
     deleteSessionMutation.mutate(session);
   };
@@ -30,6 +32,7 @@ const SessionCard = ({ session }: SessionCardProps) => {
 
   const handleAttendance = () => {
     console.log("Attendance", session.id);
+    navigate("attendance", { state: { session: session, id: session.id } });
   };
 
   return (
@@ -64,8 +67,18 @@ const SessionCard = ({ session }: SessionCardProps) => {
           onClick={handleAttendance}
           className="flex justify-center items-center gap-2 pl-10 text-2xl"
         >
-          <p className="font-medium text-red-600">20</p>
-          <p className="font-medium text-blue-600">15</p>
+          <p className="font-medium text-red-600">
+            {
+              session.presentAthletes?.filter((el) => el.gender === "FEMALE")
+                .length
+            }
+          </p>
+          <p className="font-medium text-blue-600">
+            {
+              session.presentAthletes?.filter((el) => el.gender === "MALE")
+                .length
+            }
+          </p>
           <p onClick={handleDelete} className="text-2xl pl-2">
             🗑️
           </p>

@@ -4,6 +4,7 @@ import SessionsPage from "./pages/SessionsPage";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import SessionPage from "./pages/SessionPage";
+import AttendancePage from "./pages/AttendancePage";
 
 const queryClient = new QueryClient();
 
@@ -14,6 +15,7 @@ function App() {
         <Routes>
           <Route path="/" element={<SessionsPage />} />
           <Route path="/session" element={<SessionPage />} />
+          <Route path="/attendance" element={<AttendancePage />} />
         </Routes>
       </BrowserRouter>
       <ReactQueryDevtools initialIsOpen={false} />
