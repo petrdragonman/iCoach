@@ -31,5 +31,5 @@ public class CreateAthleteDTO {
     @NonNull()
     private Double weight;
 
-    private Set<Long> sessionsAttendedIds;
+    private Set<Long> attendedSessionIds;
 }

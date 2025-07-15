@@ -32,8 +32,8 @@ public class AthleteController {
 
 
     @GetMapping
-    public ResponseEntity<List<Athlete>> getAllSessions() {
-        List<Athlete> athletes = this.athleteService.getAll();
+    public ResponseEntity<List<AthleteDTO>> getAllSessions() {
+        List<AthleteDTO> athletes = this.athleteService.getAll();
         return new ResponseEntity<>(athletes, HttpStatus.OK);
     }
 

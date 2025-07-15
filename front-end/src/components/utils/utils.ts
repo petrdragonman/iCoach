@@ -1,3 +1,5 @@
+import type { Session } from "../../services/SessionsService";
+
 export const capitaliseEachWord = (str: string) => {
   return str
     .split("")
@@ -7,4 +9,15 @@ export const capitaliseEachWord = (str: string) => {
         word.substring(1).toLocaleLowerCase()
     )
     .join("");
+};
+
+export const totalFemaleAthletes = (session: Session) => {
+  return session.presentAthletes?.filter(
+    (athlete) => athlete.gender === "FEMALE"
+  ).length;
+};
+
+export const totalMaleAthltes = (session: Session) => {
+  return session.presentAthletes?.filter((athlete) => athlete.gender === "MALE")
+    .length;
 };
