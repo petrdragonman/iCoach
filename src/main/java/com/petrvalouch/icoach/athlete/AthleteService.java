@@ -2,6 +2,7 @@ package com.petrvalouch.icoach.athlete;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -16,8 +17,10 @@ public class AthleteService {
         this.repo = repo;
     }
 
-    public List<Athlete> getAll() {
-        return this.repo.findAll();
+    public List<AthleteDTO> getAll() {
+        return this.repo.findAll().stream()
+            .map(athlete -> mapper.map(athlete, AthleteDTO.class))
+            .collect(Collectors.toList());
     }
 
     public Athlete createAthlete(CreateAthleteDTO data) {

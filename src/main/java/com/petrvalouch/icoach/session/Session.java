@@ -25,7 +25,8 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 @JsonIdentityInfo(
   generator = ObjectIdGenerators.PropertyGenerator.class, 
-  property = "id")
+  property = "id",
+  scope = Session.class)
 @Entity
 @Table(name = "sessions")
 @Getter
@@ -67,8 +68,8 @@ public class Session {
     @Column(nullable = false)
     private LocalDate date;
 
-    //@JsonBackReference
     @ManyToMany(mappedBy = "attendedSessions")
+    //@JsonIgnore
     private Set<Athlete> presentAthletes = new HashSet<>();
     
     // public void addPresentAthlete(Athlete athlete) {

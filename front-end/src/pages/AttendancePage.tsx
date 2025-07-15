@@ -14,7 +14,7 @@ const AttendancePage = () => {
   };
 
   if (state) {
-    console.log(state);
+    //console.log(state);
   }
 
   if (error) {
@@ -22,19 +22,19 @@ const AttendancePage = () => {
   }
 
   if (data) {
-    console.log(data);
+    //console.log(data);
   }
 
   return (
     <main className=" flex flex-col gap-0 justify-center items-center w-screen">
       <header className="text-red-400 text-3xl mt-20 mb-10">ATTENDANCE</header>
       {isPending && <LoadingPlaceholder />}
-      {data && <AthleteList athletes={data} />}
+      {data && <AthleteList athletes={data} sessionId={state.id} />}
       <button
         onClick={handleCancel}
         className="flex justify-end text-3xl p-1 px-4 border border-orange-600 text-orange-600 mb-5 rounded-lg mt-10"
       >
-        GO HOME
+        GO BACK
       </button>
     </main>
   );

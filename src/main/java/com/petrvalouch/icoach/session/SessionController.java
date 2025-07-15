@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ServerErrorException;
 
-import com.petrvalouch.icoach.athlete.Athlete;
 import com.petrvalouch.icoach.common.exceptions.SessionNotFoundException;
 
 import jakarta.validation.Valid;
@@ -39,11 +38,18 @@ public class SessionController {
         return new ResponseEntity<Session>(newSession, HttpStatus.CREATED);
     }
 
+    // @GetMapping
+    // public ResponseEntity<List<Session>> getAllSessions() {
+    //     List<Session> sessions = this.sessionService.getAll();
+    //     return new ResponseEntity<>(sessions, HttpStatus.OK);
+    // }
+
     @GetMapping
-    public ResponseEntity<List<Session>> getAllSessions() {
-        List<Session> sessions = this.sessionService.getAll();
-        return new ResponseEntity<>(sessions, HttpStatus.OK);
+    public ResponseEntity<List<SessionWithAthletesDTO>> getAllSessions() {
+        List<SessionWithAthletesDTO> sessionsWithAthletes = this.sessionService.getAll();
+        return new ResponseEntity<>(sessionsWithAthletes, HttpStatus.OK);
     }
+    
 
     @GetMapping("/{id}")
     public ResponseEntity<Session> getSessionById(@PathVariable Long id) throws SessionNotFoundException {
@@ -68,10 +74,28 @@ public class SessionController {
         return new ResponseEntity<Session>(foundSession, HttpStatus.OK);
     }
 
+    @PostMapping("/{id}")
+    public String postMethodName(@PathVariable Long id, @RequestBody Long athleteId) {
+        return "";
+    }
+    
+
+    // @PostMapping("/add-athlete-to-session")
+    // public ResponseEntity<AthleteDTO> addAthleteToSession(
+    // @RequestParam Long athleteId, 
+    // @RequestParam Long sessionId
+    // ) {
+    // AthleteDTO athleteDTO = this.sessionService.addAthleteToSession(athleteId, sessionId);
+    // return ResponseEntity.ok(athleteDTO);
+    // }
+
     @PostMapping("/add-athlete-to-session")
-    public ResponseEntity<Athlete> addAthleteToSessio(@RequestParam Long athleteId, @RequestParam Long sessionId) {
-        Athlete addedAthlete = this.sessionService.addAthleteToSession(athleteId, sessionId);
-        return new ResponseEntity<Athlete>(addedAthlete, HttpStatus.OK); 
+    public ResponseEntity<SessionWithAthletesDTO> addAthleteToSession(
+    @RequestParam Long athleteId, 
+    @RequestParam Long sessionId
+    ) {
+    SessionWithAthletesDTO sessionWithAthletes = this.sessionService.addAthleteToSession(athleteId, sessionId);
+        return ResponseEntity.ok(sessionWithAthletes);
     }
     
 
@@ -81,3 +105,11 @@ public class SessionController {
     }
     
 }
+
+/**
+ * @PostMapping("/add-athlete-to-session")
+    public ResponseEntity<Athlete> addAthleteToSessio(@RequestParam Long athleteId, @RequestParam Long sessionId) {
+        Athlete addedAthlete = this.sessionService.addAthleteToSession(athleteId, sessionId);
+        return new ResponseEntity<Athlete>(addedAthlete, HttpStatus.OK); 
+    }
+ */

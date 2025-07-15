@@ -3,13 +3,18 @@ import type { Athlete } from "../../services/AthleteService";
 
 interface AthleteCardProps {
   athlete: Athlete;
+  sessionId: number;
 }
 
-const AthleteCard = ({ athlete }: AthleteCardProps) => {
-  const [present, setPresent] = useState(false);
+const AthleteCard = ({ athlete, sessionId }: AthleteCardProps) => {
+  const isInTheList = athlete.attendedSessionIds?.includes(sessionId);
+  const [present, setPresent] = useState(isInTheList);
+
+  //console.log(athlete);
 
   const handleEdit = () => {};
-  const handleIsPresent = () => {
+  const toggleIsPresent = () => {
+    console.log(athlete.firstName, present);
     setPresent(!present);
   };
 
@@ -30,42 +35,14 @@ const AthleteCard = ({ athlete }: AthleteCardProps) => {
               </p>
             </section>
           </article>
-          {/* <section className="flex justify-center items-center gap-2">
-                <p onClick={handleTrainingPlan} className="text-3xl">
-                  📒
-                </p>
-                <p onClick={handleSeatingPlan} className="flex text-3xl">
-                  <span>🪑</span>
-                  <span className="-ml-2">🪑</span>
-                </p>
-              </section> */}
         </article>
+
         <article
-          onClick={handleIsPresent}
+          onClick={toggleIsPresent}
           className="flex justify-center items-center gap-2 pl-10 text-2xl"
         >
           {present ? <p>✅</p> : <p>☑️</p>}
         </article>
-        {/* <article
-              onClick={handleAttendance}
-              className="flex justify-center items-center gap-2 pl-10 text-2xl"
-            >
-              <p className="font-medium text-red-600">
-                {
-                  session.presentAthletes?.filter((el) => el.gender === "FEMALE")
-                    .length
-                }
-              </p>
-              <p className="font-medium text-blue-600">
-                {
-                  session.presentAthletes?.filter((el) => el.gender === "MALE")
-                    .length
-                }
-              </p>
-              <p onClick={handleDelete} className="text-2xl pl-2">
-                🗑️
-              </p>
-            </article> */}
       </div>
     </>
   );

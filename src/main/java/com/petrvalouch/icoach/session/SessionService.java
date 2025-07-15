@@ -2,6 +2,7 @@ package com.petrvalouch.icoach.session;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -27,8 +28,10 @@ public class SessionService {
         return this.sessionRepo.save(newSession);
     }
 
-    public List<Session> getAll() {
-        return this.sessionRepo.findAll();
+    public List<SessionWithAthletesDTO> getAll() {
+        return sessionRepo.findAll().stream()
+            .map(session -> mapper.map(session, SessionWithAthletesDTO.class))
+            .collect(Collectors.toList());
     }
 
     public Optional<Session> getById(Long id) {
@@ -55,12 +58,35 @@ public class SessionService {
         return Optional.of(foundSession);
     }
 
-    public Athlete addAthleteToSession(Long athleteId, Long sessionId) {
+    public SessionWithAthletesDTO addAthleteToSession(Long athleteId, Long sessionId) {
+        Athlete athlete = athleteRepo.findById(athleteId)
+            .orElseThrow(() -> new IllegalArgumentException("Athlete not found"));
+        Session session = sessionRepo.findById(sessionId)
+            .orElseThrow(() -> new IllegalArgumentException("Session not found"));
+
+        // Add the session to the athlete
+        athlete.getAttendedSessions().add(session);
+        athleteRepo.save(athlete);
+
+        // Map to DTO before returning
+        //return mapper.map(athlete, AthleteDTO.class);
+        return mapper.map(session, SessionWithAthletesDTO.class);
+    }
+    
+}
+
+/**
+ * public Athlete addAthleteToSession(Long athleteId, Long sessionId) {
+        //Optional<Athlete> athlete = this.athleteRepo.findById(athleteId);
+        //Optional<Session> session = this.sessionRepo.findById(sessionId);
         Optional<Athlete> athlete = this.athleteRepo.findById(athleteId);
         Optional<Session> session = this.sessionRepo.findById(sessionId);
         if (session.isPresent() && athlete.isPresent()) {
             athlete.get().getAttendedSessions().add(session.get());
-            athleteRepo.save(athlete.get());
+            ////////////////
+            mapper.map(athlete, CreateAthleteDTO.class);
+            this.athleteRepo.save(athlete.get());
+            ///////////////
             //session.get().getPresentAthletes().add(athlete.get());
             //sessionRepo.save(session.get());
             ////////////////////
@@ -69,5 +95,4 @@ public class SessionService {
             throw new IllegalArgumentException("Athlete or Session not found");
         }
     }
-    
-}
+ */
