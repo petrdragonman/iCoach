@@ -1,11 +1,12 @@
 import type { Athlete } from "../services/AthleteService";
-import AthleteCard from "./athleteCard/Athletecard";
+import AthleteCard from "./athleteCard/AthleteCard";
 
 interface AthleteListProps {
   athletes: Athlete[];
+  sessionId: number;
 }
 
-const AthleteList = ({ athletes }: AthleteListProps) => {
+const AthleteList = ({ athletes, sessionId }: AthleteListProps) => {
   if (athletes.length === 0) {
     return null;
   }
@@ -13,7 +14,7 @@ const AthleteList = ({ athletes }: AthleteListProps) => {
   return (
     <>
       {athletes.map((athlete) => (
-        <AthleteCard key={athlete.id} athlete={athlete} />
+        <AthleteCard key={athlete.id} athlete={athlete} sessionId={sessionId} />
       ))}
     </>
   );

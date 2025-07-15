@@ -2,6 +2,7 @@ import { useNavigate } from "react-router";
 import { useDeleteSession } from "../../services/queries";
 import type { Session } from "../../services/SessionsService";
 import { format } from "date-fns";
+import { totalFemaleAthletes, totalMaleAthltes } from "../utils/utils";
 
 interface SessionCardProps {
   session: Session;
@@ -10,8 +11,6 @@ interface SessionCardProps {
 const SessionCard = ({ session }: SessionCardProps) => {
   const deleteSessionMutation = useDeleteSession();
   const navigate = useNavigate();
-
-  console.log(session);
 
   const handleDelete = () => {
     deleteSessionMutation.mutate(session);
@@ -31,7 +30,7 @@ const SessionCard = ({ session }: SessionCardProps) => {
   };
 
   const handleAttendance = () => {
-    console.log("Attendance", session.id);
+    //console.log("Attendance", session.id);
     navigate("attendance", { state: { session: session, id: session.id } });
   };
 
@@ -68,16 +67,10 @@ const SessionCard = ({ session }: SessionCardProps) => {
           className="flex justify-center items-center gap-2 pl-10 text-2xl"
         >
           <p className="font-medium text-red-600">
-            {
-              session.presentAthletes?.filter((el) => el.gender === "FEMALE")
-                .length
-            }
+            {totalFemaleAthletes(session)}
           </p>
           <p className="font-medium text-blue-600">
-            {
-              session.presentAthletes?.filter((el) => el.gender === "MALE")
-                .length
-            }
+            {totalMaleAthltes(session)}
           </p>
           <p onClick={handleDelete} className="text-2xl pl-2">
             🗑️

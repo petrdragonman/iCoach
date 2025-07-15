@@ -1,5 +1,6 @@
 import axios from "axios";
 import { BASE_URL } from "./serviceUtils";
+import type { Session } from "react-router";
 
 const axiosInstance = axios.create({ baseURL: BASE_URL });
 
@@ -10,13 +11,14 @@ export interface Athlete {
   nickName: string;
   gender: Gender;
   weight: number;
-  attendedSessions?: Array<Athlete>;
+  attendedSessions?: Array<Session>;
+  attendedSessionIds?: Array<number>;
 }
 
 type Gender = "MALE" | "FEMALE";
 
 export const getAllAthletes = async () => {
   const response = await axiosInstance.get<Athlete[]>("athletes");
-  console.log(response);
+  //console.log(response);
   return response.data;
 };

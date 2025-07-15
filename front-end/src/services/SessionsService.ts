@@ -12,6 +12,7 @@ export interface Session {
   location: string;
   date: string;
   presentAthletes?: Array<Athlete>;
+  presentAthleteIds: Array<number>;
 }
 
 type SessionType = "TRAINING" | "RACING" | "LAND" | "OTHER";
