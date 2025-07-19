@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getAllAthletes } from "./AthleteService";
 
 export const useAthletes = () => {
@@ -7,3 +7,14 @@ export const useAthletes = () => {
     queryFn: getAllAthletes,
   });
 };
+
+// export const useAddAthleteToSession = () => {
+//   const queryClient = useQueryClient();
+
+//   return useMutation({
+//     mutationFn: addAthleteToSession,
+//     onSuccess: () => {
+//       queryClient.invalidateQueries({ queryKey: ["athletes"] });
+//     },
+//   });
+// };

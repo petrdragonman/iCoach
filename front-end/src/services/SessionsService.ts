@@ -34,6 +34,24 @@ export const createSession = async (data: Session) => {
   return response.data;
 };
 
+// http://localhost:8080/sessions/1?athleteId=3
+export const addAthleteToSession = async (id: number, athleteId: number) => {
+  const response = await axiosInstance.post(
+    `sessions/add/${id}?athleteId=${athleteId}`
+  );
+  return response.data;
+};
+
+export const removeAthleteFromSession = async (
+  id: number,
+  athleteId: number
+) => {
+  const response = await axiosInstance.post(
+    `sessions/remove/${id}?athleteId=${athleteId}`
+  );
+  return response.data;
+};
+
 export const updateSession = async (data: Session) => {
   console.log(data);
   const response = await axiosInstance.patch(`sessions/${data.id}`, data);
