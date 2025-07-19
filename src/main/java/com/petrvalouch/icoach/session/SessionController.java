@@ -74,9 +74,17 @@ public class SessionController {
         return new ResponseEntity<Session>(foundSession, HttpStatus.OK);
     }
 
-    @PostMapping("/{id}")
-    public String postMethodName(@PathVariable Long id, @RequestBody Long athleteId) {
-        return "";
+    // http://localhost:8080/sessions/1?athleteId=3
+    @PostMapping("/add/{id}")
+    public ResponseEntity<SessionWithAthletesDTO> addAthleteIntoSession(@PathVariable Long id, @RequestParam Long athleteId) {
+        SessionWithAthletesDTO sessionWithAthletes = this.sessionService.addAthleteToSession(athleteId, id);
+        return new ResponseEntity<SessionWithAthletesDTO>(sessionWithAthletes, HttpStatus.OK);
+    }
+    
+    @PostMapping("/remove/{id}")
+    public ResponseEntity<SessionWithAthletesDTO> removeAthleteFromSession(@PathVariable Long id, @RequestParam Long athleteId) {
+        SessionWithAthletesDTO sessionWithAthletes = this.sessionService.removeAthleteFromSession(athleteId, id);
+        return new ResponseEntity<SessionWithAthletesDTO>(sessionWithAthletes, HttpStatus.OK);
     }
     
 
