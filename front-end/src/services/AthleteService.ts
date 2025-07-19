@@ -22,3 +22,14 @@ export const getAllAthletes = async () => {
   //console.log(response);
   return response.data;
 };
+
+// http://localhost:8080/sessions/1?athleteId=3
+// export const addAthleteToSession = async (
+//   sessionId: number,
+//   athleteId: number
+// ) => {
+//   const response = await axiosInstance.post(
+//     `sessions/${sessionId}?athleteId=${athleteId}`
+//   );
+//   return response.data;
+// };

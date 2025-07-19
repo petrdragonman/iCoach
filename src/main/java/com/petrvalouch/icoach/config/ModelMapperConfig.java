@@ -46,9 +46,9 @@ public class ModelMapperConfig {
 
         // Map Athlete -> AthleteWithSessionsDTO
         mapper.createTypeMap(Athlete.class, AthleteWithSessionsDTO.class)
-        .includeBase(Athlete.class, AthleteDTO.class)
-        .addMappings(m -> {
-            m.map(Athlete::getAttendedSessions, AthleteWithSessionsDTO::setAttendedSessions);
+            .includeBase(Athlete.class, AthleteDTO.class)
+            .addMappings(m -> {
+                m.map(Athlete::getAttendedSessions, AthleteWithSessionsDTO::setAttendedSessions);
         });
     }
 

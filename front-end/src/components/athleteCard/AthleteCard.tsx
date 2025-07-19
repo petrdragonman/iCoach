@@ -1,5 +1,9 @@
 import { useState } from "react";
 import type { Athlete } from "../../services/AthleteService";
+import {
+  useAddAthleteToSession,
+  useRemoveAthleteFromSession,
+} from "../../services/queries";
 
 interface AthleteCardProps {
   athlete: Athlete;
@@ -10,12 +14,55 @@ const AthleteCard = ({ athlete, sessionId }: AthleteCardProps) => {
   const isInTheList = athlete.attendedSessionIds?.includes(sessionId);
   const [present, setPresent] = useState(isInTheList);
 
+  const removeAthleteFromSessionMutation = useRemoveAthleteFromSession();
+  const addAthleteToSessionMutation = useAddAthleteToSession();
+
   //console.log(athlete);
 
   const handleEdit = () => {};
+
   const toggleIsPresent = () => {
-    console.log(athlete.firstName, present);
+    // Early return if athlete.id is undefined
+    if (athlete.id === undefined) {
+      console.error("Athlete ID is undefined");
+      return;
+    }
+
+    const athleteId = athlete.id;
+
+    // Optimistic UI update - update local state immediately
     setPresent(!present);
+
+    try {
+      if (present) {
+        console.log("Removing athlete from session");
+        removeAthleteFromSessionMutation.mutate(
+          { sessionId, athleteId },
+          {
+            onError: () => {
+              // Revert if the mutation fails
+              setPresent(present);
+              console.error("Failed to remove athlete");
+            },
+          }
+        );
+      } else {
+        console.log("Adding athlete to session");
+        addAthleteToSessionMutation.mutate(
+          { sessionId, athleteId },
+          {
+            onError: () => {
+              // Revert if the mutation fails
+              setPresent(present);
+              console.error("Failed to add athlete");
+            },
+          }
+        );
+      }
+    } catch (error) {
+      console.error("Error in toggleIsPresent:", error);
+      setPresent(present); // Revert on unexpected errors
+    }
   };
 
   return (

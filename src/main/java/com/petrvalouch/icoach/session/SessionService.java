@@ -72,6 +72,20 @@ public class SessionService {
         //return mapper.map(athlete, AthleteDTO.class);
         return mapper.map(session, SessionWithAthletesDTO.class);
     }
+
+    public SessionWithAthletesDTO removeAthleteFromSession(Long athleteId, Long sessionId) {
+        Athlete athlete = athleteRepo.findById(athleteId)
+            .orElseThrow(() -> new IllegalArgumentException("Athlete not found"));
+        Session session = sessionRepo.findById(sessionId)
+            .orElseThrow(() -> new IllegalArgumentException("Session not found"));
+    
+        // Remove the session from the athlete
+        athlete.getAttendedSessions().remove(session);
+        athleteRepo.save(athlete);
+
+        return mapper.map(session, SessionWithAthletesDTO.class);
+
+    }
     
 }
 
